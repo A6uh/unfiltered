@@ -60,14 +60,14 @@ Devvit.addTrigger({
       if (typeof id === 'string' && id !== ''){
         const comment = await reddit.getCommentById(id, metadata);
         //comment.bannedBy returns true, false, or the name of the moderator
-        if (comment.bannedBy !== "true" as any && comment.bannedBy !== undefined) {
+        if (comment.bannedBy !== "true" as any && comment.bannedBy !== "automoderator" as any && comment.bannedBy !== undefined) {
           console.log('Comment had been removed by a moderator');
           return;
-        }
+        } else {
         comment.approve();
         console.log(`Comment approved`);
+        }
       }
-
     }
   },
 });
@@ -85,13 +85,18 @@ Devvit.addTrigger({
     const keywords = await getSetting(`keywords`, metadata);
 
     //Check if author and body match whitelisted usernames or keywords
+    //Additional check in case moderation is performed before the trigger (in case of delay)
     if (compareToSettings(author, body, usernames, keywords)) {
       if (typeof id === 'string' && id !== ''){
-      const comment = await reddit.getCommentById(id, metadata);
-      comment.approve();
-      console.log(`Comment approved`);
+        const comment = await reddit.getCommentById(id, metadata);
+        if (comment.bannedBy !== "true" as any && comment.bannedBy !== "automoderator" as any && comment.bannedBy !== undefined) {
+          console.log('Comment had been removed by a moderator');
+          return;
+        } else {
+        comment.approve();
+        console.log(`Comment approved`);
+        }
       }
-
     }
   },
 });
@@ -112,11 +117,15 @@ Devvit.addTrigger({
     //Check if author and body match whitelisted usernames or keywords
     if (compareToSettings(author, texts, usernames, keywords)) {
       if (typeof id === 'string' && id !== ''){
-        const post = await reddit.getPostById(id, metadata);
+      const post = await reddit.getPostById(id, metadata);
+      if (post.bannedBy !== "true" as any && post.bannedBy !== "automoderator" as any && post.bannedBy !== undefined) {
+        console.log('Post had been removed by a moderator');
+        return;
+      } else {
         post.approve();
         console.log(`Post approved`);
       }
-
+      }
     }
   },
 });
@@ -139,14 +148,14 @@ Devvit.addTrigger({
     if (compareToSettings(author, texts, usernames, keywords)) {
       if (typeof id === 'string' && id !== ''){
       const post = await reddit.getPostById(id, metadata);
-      if (post.bannedBy !== "true" as any && post.bannedBy !== undefined) {
+      if (post.bannedBy !== "true" as any && post.bannedBy !== "automoderator" as any && post.bannedBy !== undefined) {
         console.log('Post had been removed by a moderator');
         return;
+      } else {
+        post.approve();
+        console.log(`Post approved`);
       }
-      post.approve();
-      console.log(`Post approved`);
       }
-
     }
   },
 });
