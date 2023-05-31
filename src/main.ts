@@ -59,7 +59,7 @@ Devvit.addTrigger({
     if (compareToSettings(author, body, usernames, keywords)) {
       if (typeof id === 'string' && id !== ''){
         const comment = await reddit.getCommentById(id, metadata);
-        //comment.bannedBy returns true, false, or the name of the moderator
+        //comment.bannedBy returns true, undefined, or the name of the moderator
         if (comment.bannedBy !== "true" as any && comment.bannedBy !== "automoderator" as any && comment.bannedBy !== undefined) {
           console.log('Comment had been removed by a moderator');
           return;
